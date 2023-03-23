@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\SliderController;
 use App\Http\Controllers\Backend\BrandController;
 use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\IndexController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -28,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 //     return view('frontend.index');
 // });
 
-Route::get('/',[IndexController::class,'Index']);
+Route::get('/',[IndexController::class,'Index'])->name('home');
 
 Route::middleware(['auth'])->group(function(){
 
@@ -198,3 +199,24 @@ Route::get('/product/details/{id}/{slug}',[IndexController::class,'ProductDetail
 
 /// frontend category 
 Route::get('/product/category/{id}/{slug}',[IndexController::class,'CatWiseProduct']);
+
+// Product View Model With Ajax
+Route::get('/product/view/model/{id}/',[IndexController::class,'ProductViewAjax']);
+
+
+
+Route::middleware(['auth','role:user'])->group(function(){
+
+    Route::controller(CartController::class)->group(function(){
+
+        // add to cart store data 
+        Route::post('/cart/data/store/{id}/','AddToCart');
+        
+        // view cart details
+        Route::get('/mycart','MyCart')->name('mycart');
+
+        Route::get('/delete/cart/{id}','DeleteCart')->name('delete.cart');
+
+    });
+
+}); // End Middleware
