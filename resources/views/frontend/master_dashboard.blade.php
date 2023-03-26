@@ -19,6 +19,11 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{asset('frontend/assets/css/plugins/animate.min.css')}} " />
     <link rel="stylesheet" href="{{asset('frontend/assets/css/main.css?v=5.3')}} " />
+
+    {{-- notifications --}}
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" type="text/css" media="all" />
+
 </head>
 
 <body>
@@ -72,128 +77,39 @@
     <script src="{{asset('frontend/assets/js/main.js?v=5.3')}} "></script>
     <script src="{{asset('frontend/assets/js/shop.js?v=5.3')}} "></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script type="text/javascript">
-    
-        $.ajaxSetup({
-            headers:{
-                'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
-            }
-        })
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+   
+    {{--  start notifications --}}
+      
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-        // start product view with model
+	<script>
+		@if(Session::has('message'))
+		var type = "{{ Session::get('alert-type','info') }}"
+		switch(type){
+			case 'info':
+			toastr.info(" {{ Session::get('message') }} ");
+			break;
 
-        function productView(id){
-            // alert(id)
+			case 'success':
+			toastr.success(" {{ Session::get('message') }} ");
+			break;
 
-            $.ajax({
-                type : 'GET',
-                url : '/product/view/model/'+id,
-                dataType : 'json',
-                success:function(data){
-                    // console.log(data);
-                    $('#pname').text(data.product.product_name);
-                    $('#pprice').text(data.product.selling_price);
-                    $('#pcode').text(data.product.product_code);
+			case 'warning':
+			toastr.warning(" {{ Session::get('message') }} ");
+			break;
 
-                    $('#pcategory').text(data.product.category.category_name);
-                    $('#pbrand').text(data.product.brand.brand_name);
+			case 'error':
+			toastr.error(" {{ Session::get('message') }} ");
+			break; 
+		}
+		@endif 
+	</script>
 
-                    $('#pimage').attr('src','/'+ data.product.product_thambnail);
-                    
-                    $('#product_id').val(id);
-                    $('#qty').val(1);
+    {{-- end notifications --}}
 
-
-
-
-
-                    //product price
-
-                    if(data.product.discount_price == null) {
-                        $('#pprice').text('');
-                        $('#oldprice').text('');
-
-                        $('#pprice').text(data.product.selling_price);
-
-                    }else {
-
-                        $('#pprice').text(data.product.discount_price);
-                        $('#oldprice').text(data.product.selling_price);
-                        
-                    }
-
-                    if(data.product.product_qty > 0 ) {
-                        $('#aviable').text('');
-                        $('#stockout').text('');
-
-                        $('#aviable').text('aviable');
-                    } else {
-                        $('#aviable').text('');
-                        $('#stockout').text('');
-
-                        $('#stockout').text('stockout');
-
-                    }
-
-                    $('select[name="size"]').empty();
-                    $.each(data.size,function(key,value){
-                        $('select[name="size"]').append('<option value=" ' + value + ' "> '+ value +' </option>')
-
-                        if (data.size == '') {
-                            $('#sizeArea').hide();
-                        }else {
-                            $('#sizeArea').show();
-                        }
-                    }) // end size
-
-
-                    $('select[name="color"]').empty();
-                    $.each(data.color,function(key,value){
-                        $('select[name="color"]').append('<option value=" ' + value + ' "> '+ value +' </option>')
-
-                        if (data.color == '') {
-                            $('#colorArea').hide();
-                        }else {
-                            $('#colorArea').show();
-                        }
-                    }) // end color
-
-                }
-            })
-
-
-        } // END product view with model
-        
-
-        // start add to cart product
-
-        // function addToCart(){
-        //     var product_name = $('#pname').text();
-        //     var id = $('#product_id').val();
-        //     var color = $('#color option:selected').text();
-        //     var size = $('#size option:selected').text();
-        //     var quantity = $('#qty').val();
-
-        //     $.ajax({
-        //         type : "POST",
-        //         dataType : "json" ,
-        //         data : {
-        //             color:color,
-        //             size:size,
-        //             quantity:quantity,
-        //             product_name:product_name,
-        //         },
-        //         url: "/cart/data/store/"+id,
-        //         success:function(data){
-        //             console.log(data);
-        //         }
-        //     })
-
-        // } // END add to cart product
-        
-
-    </script>
 
 </body>
 

@@ -5,10 +5,17 @@ use App\Http\Controllers\Backend\BannerController;
 use App\Http\Controllers\Backend\SliderController;
 use App\Http\Controllers\Backend\BrandController;
 use App\Http\Controllers\Backend\CategoryController;
+use App\Http\Controllers\Backend\CouponController;
+use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Backend\ShippingAreaController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\IndexController;
+use App\Http\Controllers\Frontend\UseCouponController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\AllUserController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\StripeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -189,8 +196,60 @@ Route::middleware(['auth','role:admin'])->group(function(){
         
     });
 
+    /////////// coupon ///////////
 
-}); // End Middleware
+    Route::controller(CouponController::class)->group(function(){
+    
+        Route::get('/all/coupon','AllCoupon')->name('all.coupon');
+
+        Route::get('/add/coupon','AddCoupon')->name('add.coupon');
+        Route::post('/store/coupon','StoreCoupon')->name('store.coupon');
+
+        Route::get('/edit/coupon/{id}','EditCoupon')->name('edit.coupon');
+        Route::post('/update/coupon','UpdateCoupon')->name('update.coupon');
+
+        Route::get('/delete/coupon/{id}','DeleteCoupon')->name('delete.coupon');
+        
+       
+
+    });
+
+    
+
+    /////////// Shipping State  ///////////
+
+    Route::controller(ShippingAreaController::class)->group(function(){
+    
+        Route::get('/all/state','AllState')->name('all.state');
+
+        Route::get('/add/state','AddState')->name('add.state');
+        Route::post('/store/state','StoreState')->name('store.state');
+
+        Route::get('/edit/state/{id}','EditState')->name('edit.state');
+        Route::post('/update/state','UpdateState')->name('update.state');
+
+        Route::get('/delete/state/{id}','DeleteState')->name('delete.state');
+        
+        Route::get('/district/ajax/{division_id}','GetDistrict');
+
+    });
+
+
+    Route::controller(OrderController::class)->group(function(){
+    
+        Route::get('/pending/order','PendingOrder')->name('pending.order');
+        Route::get('/admin/order/details/{order_id}','AdminOrderDetails')->name('admin.order.details');
+
+        Route::get('/admin/delivered/order' , 'AdminDeliveredOrder')->name('admin.delivered.order');
+
+        Route::get('/processing/delivered/{order_id}' , 'ProcessToDelivered')->name('processing-delivered');
+
+        Route::get('/admin/invoice/download/{order_id}' , 'AdminInvoiceDownload')->name('admin.invoice.download');
+      
+
+    });
+
+}); // admin End Middleware
 
 
 /// frontend product details
@@ -216,6 +275,34 @@ Route::middleware(['auth','role:user'])->group(function(){
         Route::get('/mycart','MyCart')->name('mycart');
 
         Route::get('/delete/cart/{id}','DeleteCart')->name('delete.cart');
+
+        // checkout page route
+        Route::get('/checkout/{AllTotal}','CheckoutCreate')->name('checkout');
+
+    });
+
+  
+
+    // Stripe All Route 
+
+    Route::controller(StripeController::class)->group(function(){
+        Route::post('/stripe/order' , 'StripeOrder')->name('stripe.order');
+        Route::post('/cash/order' , 'CashOrder')->name('cash.order');
+    
+
+    }); 
+
+    Route::controller(AllUserController::class)->group(function(){
+
+        Route::get('/user/account/page','UserAccount')->name('user.account.page');
+        
+        Route::get('/user/change/password','UserChangePassword')->name('user.change.password');
+        
+        Route::get('/user/order/page','UserOrderPage')->name('user.order.page');
+        
+        Route::get('/user/order_details/{order_id}','UserOrderDetails');
+        
+        Route::get('/user/invoice_download/{order_id}','UserOrderInvoice');
 
     });
 
